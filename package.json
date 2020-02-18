@@ -1,0 +1,29 @@
+{
+  "name": "kraken-crypto-payments-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist",
+    "watch": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lautarodragan/kraken-crypto-payments-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lautarodragan/kraken-crypto-payments-challenge/issues"
+  },
+  "homepage": "https://github.com/lautarodragan/kraken-crypto-payments-challenge#readme",
+  "dependencies": {
+    "mongodb": "3.5.3"
+  },
+  "devDependencies": {
+    "@types/mongodb": "3.3.16",
+    "typescript": "3.7.5"
+  }
+}
