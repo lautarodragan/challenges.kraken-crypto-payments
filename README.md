@@ -25,6 +25,15 @@ $ jq '.transactions | length' transactions-2.json
 136
 ```
 
+## Blocks
+
+```
+> db.listsinceblock1.distinct("blockhash").length
+48
+> db.listsinceblock2.distinct("blockhash").length
+49
+```
+
 ## Other Data
 
 ```
