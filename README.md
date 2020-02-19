@@ -12,6 +12,7 @@
     1. None of them were provided in the challenge. Does it matter? 
     1. `target_confirmations` affects the result's `lastblock`. 
     1. `include_removed` doesn't seem to matter in this case since both files have `remoted: []`.
+    1. Every transaction in both files has `involvesWatchonly` set to `true`, `include_watchonly` was probably enabled, but it doesn't really matter.
  
 # Random Data
 
