@@ -6,11 +6,18 @@
  
 # Random Data
 
+## Transaction Count
+
 ```
 $ jq '.transactions | length' transactions-1.json 
 176
 $ jq '.transactions | length' transactions-2.json 
 136
+```
+
+## Other Data
+
+```
 $ jq 'del(.transactions)' transactions-1.json 
 {
   "removed": [],
@@ -21,5 +28,4 @@ $ jq 'del(.transactions)' transactions-2.json
   "removed": [],
   "lastblock": "3125fc0ebdcbdae25051f0f5e69ac2969cf910bdf5017349ef55a0ef9d76d591"
 }
-
 ```
