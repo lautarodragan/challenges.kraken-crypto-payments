@@ -19,7 +19,7 @@ async function main() {
 
 async function fileToCollection(filePath: string, dbConnection: Db, collectionName: string) {
   const collection = dbConnection.collection(collectionName)
-  await collection.createIndex({ txid: 1 }, { unique: true })
+  await collection.createIndex({ blockhash: 1, txid: 1, vout: 1 }, { unique: true })
 
   const file = JSON.parse(await readFile(filePath, 'utf8'))
 
