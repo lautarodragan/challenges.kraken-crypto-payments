@@ -10,6 +10,7 @@ async function main() {
   const dbConnection = await mongoClient.db()
 
   await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock1')
+  await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock2')
 
   await mongoClient.close()
 
