@@ -1,4 +1,4 @@
-# Assumptions
+# Thinking Out Loud
 
 1. `listsinceblock` returns transactions affecting addresses known to bitcoind's wallet
 1. This hypothetical Kraken software uses bitcoind's wallet rather than its own wallet implementation
