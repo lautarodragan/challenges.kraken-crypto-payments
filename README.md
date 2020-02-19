@@ -105,7 +105,19 @@ true
 	"111dc83db39d452daf199b1aa3829c39d79e802a9d7ba416a7560b2a4ceee3f0",
 	"5862934ea32180ea6d8ccc2de7a937568f94277a74c2c37be6596041806d1984"
 ]
+> let repeatedtxs = txs1.filter(_ => txs2.includes(_))
+> db.listsinceblock1.find({ txid: { $in: repeatedtxs } }).pretty()
+...
 ```
+
+The transaction `8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7d` appears in both transaction sets and has `55` confirmations both times, so the two `listsinceblock` calls must have been made at the same time (relatively, no new blocks between calls).
+
+```
+> db.listsinceblock1.find({ txid: '8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7d' }).pretty()
+> db.listsinceblock2.find({ txid: '8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7d' }).pretty()
+```
+
+This should mean that both sets contain different transactions because the `blockhash` passed was different.
 
 ```
 let blocks1 = db.listsinceblock1.distinct("blockhash")
