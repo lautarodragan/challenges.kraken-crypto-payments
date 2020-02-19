@@ -3,6 +3,9 @@
 1. `listsinceblock` returns transactions affecting addresses known to bitcoind's wallet.
 1. This hypothetical Kraken software uses bitcoind's wallet rather than its own wallet implementation.
 1. At least some of the block hashes mentioned in the files don't exist in either mainnet or testnet, so it's probably some regtest data.
+1. [`listsinceblock`](https://bitcoin-rpc.github.io/en/doc/0.17.99/rpc/wallet/listsinceblock/) takes a mandatory `blockhash` argument and three optional ones: `target_confirmations`, `include_watchonly` and `include_removed`. None of them were provided in the challenge. Does it matter? 
+  1. `target_confirmations` affects the result's `lastblock`. 
+  1. `include_removed` doesn't seem to matter in this case since both files have `remoted: []`.
  
 # Random Data
 
