@@ -79,7 +79,7 @@ $ jq 'del(.transactions)' transactions-2.json
 }
 ```
 
-## Repeated Blocks & Transactions
+## Repeated Transactions
 
 ```
 > let txs1 = db.listsinceblock1.distinct("txid")
@@ -118,6 +118,8 @@ The transaction `8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7
 ```
 
 This should mean that both sets contain different transactions because the `blockhash` passed was different.
+
+## Repeated Blocks
 
 ```
 let blocks1 = db.listsinceblock1.distinct("blockhash")
