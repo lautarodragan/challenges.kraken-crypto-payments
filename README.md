@@ -34,6 +34,15 @@ $ jq '.transactions | length' transactions-2.json
 49
 ```
 
+## Addresses
+
+```
+> db.listsinceblock1.distinct('address').length
+32
+> db.listsinceblock2.distinct('address').length
+31
+```
+
 ## Other Data
 
 ```
