@@ -20,7 +20,7 @@ In theory, if there's a `receive` transaction in my wallets, the associated addr
 
 Filtering by `.confirmations >= 6` should be enough, assuming my node knows the chain tip at all times with insignificant lag and no reorgs larger than 6 blocks occur.  
 
-But what to infer from two different sets? 
+But what to infer from two different sets? Should I just merge them? Why are there 12 transactions present in both?
 
 # Random Data
 
@@ -77,6 +77,53 @@ $ jq 'del(.transactions)' transactions-2.json
   "removed": [],
   "lastblock": "3125fc0ebdcbdae25051f0f5e69ac2969cf910bdf5017349ef55a0ef9d76d591"
 }
+```
+
+## Repeated Blocks & Transactions
+
+```
+> let txs1 = db.listsinceblock1.distinct("txid")
+> let txs2 = db.listsinceblock2.distinct("txid")
+> txs1.filter(_ => txs2.includes(_)).length
+12
+> txs2.filter(_ => txs1.includes(_)).length
+12
+> txs2.filter(_ => txs1.includes(_)).sort().join() === txs1.filter(_ => txs2.includes(_)).sort().join()
+true
+> txs1.filter(_ => txs2.includes(_))
+[
+	"8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7d",
+	"c828a14c948aadb71f4fd25e898bf4c147c6bfa4c26cf950d6026c536c855c9a",
+	"6feb5e58452e07b074497f0082659b0463759418479e166a74b92b98eeed1a15",
+	"1ab5c27a4896b8fb241271e2d7bba0306bb2da18bd763eecc8cbb6476449b56c",
+	"c7af9e3d47ea1e526227ae34d297ca57d95de89397fdf20342fe5d39d93b1041",
+	"d2344f32357fcde1464c7dcd643a0e38f58283e4eaaa630831777d9ebcce8817",
+	"58c33ad7c98754cce27b0ad60cc8bb612d8a37946d5a1439806c8ee4c0d295fd",
+	"fa96000f88693427485181510f57119a1704015b9f96b9c19efffb277d202548",
+	"f674a728f69e3f27054fd4cf1fcbb953275b214bf9a48936017a7a85fa6e2663",
+	"ecebebf6ea1a46bf7df9ba3d38ffebcdd8f5b284b8b94b523ca131f751219554",
+	"111dc83db39d452daf199b1aa3829c39d79e802a9d7ba416a7560b2a4ceee3f0",
+	"5862934ea32180ea6d8ccc2de7a937568f94277a74c2c37be6596041806d1984"
+]
+```
+
+```
+let blocks1 = db.listsinceblock1.distinct("blockhash")
+let blocks2 = db.listsinceblock2.distinct("blockhash")
+> blocks1.filter(_ => blocks2.includes(_)).length
+5
+> blocks2.filter(_ => blocks1.includes(_)).length
+5
+> blocks2.filter(_ => blocks1.includes(_)).sort().join() === blocks1.filter(_ => blocks2.includes(_)).sort().join()
+true
+> blocks1.filter(_ => blocks2.includes(_))
+[
+	"4f66926440f1b39fcd5db66609737f877ce32abfc68a945fbd049996ce7d0da2",
+	"b6efb29ff8e47646a03f65fffa92e452251b9833decbc749358dcef5ba581ebc",
+	"d8a4b1bf5b2c6ba9c3f796fb73793a0e043a22045f53ae8be78114bb8b3f5b90",
+	"ecd4cb244481d18d782c60302ac432074b68873cf646be79b3892e0764b0fc47",
+	"ef712de73bc81deb766e1f1b55324e3f0b6b543bcc70560bc7af1204d64c2233"
+]
 ```
 
 ## ???
