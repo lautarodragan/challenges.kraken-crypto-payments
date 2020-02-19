@@ -1,6 +1,6 @@
 # Links
 
-1. [listsinceblock docs](https://bitcoin-rpc.github.io/en/doc/0.17.99/rpc/wallet/listsinceblock/)
+1. [listsinceblock docs](https://bitcoin.org/en/developer-reference#listsinceblock/)
 
 # Thinking Out Loud
 
