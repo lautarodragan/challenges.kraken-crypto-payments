@@ -25,12 +25,15 @@ async function fileToCollection(filePath: string, dbConnection: Db, collectionNa
 
   console.log(`Adding ${file.transactions.length} entries from ${filePath} to DB.${collectionName}...`)
   try {
-    await collection.insertMany(file.transactions, { ordered: false })
+    const writeResult = await collection.insertMany(file.transactions, { ordered: false })
+    console.log(`Added ${writeResult.result.n} entries.`)
   } catch (error) {
-    if (!error.message.includes('E11000 duplicate key error'))
-      throw error
-    console.log(`Ignored ${error.writeErrors.length} duplicate entries.`)
+    if (!isDuplicateKeyError(error))
+      return console.error('Unexpected error:', error)
+    console.log(`Added ${error.result.nInserted} entries. Ignored ${error.result.result.writeErrors.length} duplicate entries.`)
   }
 }
+
+const isDuplicateKeyError = (error: any) => error.code === 11000
 
 main().catch(console.error)
