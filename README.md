@@ -1,6 +1,6 @@
 # Links
 
-1. [listsinceblock docs](https://bitcoin.org/en/developer-reference#listsinceblock/)
+1. [listsinceblock docs](https://bitcoin.org/en/developer-reference#listsinceblock)
 
 # Thinking Out Loud
 
@@ -14,6 +14,12 @@
     1. `include_removed` doesn't seem to matter in this case since both files have `remoted: []`.
     1. Every transaction in both files has `involvesWatchonly` set to `true`, `include_watchonly` was probably enabled, but it doesn't really matter.
  
+In theory, if there's a `receive` transaction in my wallets, the associated address has given me that money, so I should count it in my database.
+
+Filtering by `.confirmations >= 6` should be enough, assuming my node knows the chain tip at all times with insignificant lag and no reorgs larger than 6 blocks occur.  
+
+But what to infer from two different sets? 
+
 # Random Data
 
 ## Transaction Count
@@ -41,6 +47,19 @@ $ jq '.transactions | length' transactions-2.json
 32
 > db.listsinceblock2.distinct('address').length
 31
+```
+
+## Confirmed Transactions
+
+```
+> db.listsinceblock1.find({ confirmations: { $gte: 6 } }).count()
+73
+> db.listsinceblock1.find({ confirmations: { $gte: 6 }, category: 'receive' }).count()
+59
+> db.listsinceblock2.find({ confirmations: { $gte: 6 } }).count()
+136
+> db.listsinceblock2.find({ confirmations: { $gte: 6 }, category: 'receive' }).count()
+121
 ```
 
 ## Other Data
