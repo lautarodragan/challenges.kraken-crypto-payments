@@ -119,6 +119,56 @@ The transaction `8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7
 
 This should mean that both sets contain different transactions because the `blockhash` passed was different.
 
+## Weird Transaction
+
+There's a transaction in the second set that seems duplicated in all but the `vout`. 
+
+```
+> db.listsinceblock2.aggregate([{ $group: { _id: { txid: "$txid" }, count: { $sum: 1 }}}, { $match: { count: { $gt: 1 } } } ])
+{ "_id" : { "txid" : "b1c7e3b67d128088c829c31a323c883a05bd9fa8b9a5a7bfd56d67c8579f6473" }, "count" : 2 }
+> db.listsinceblock2.find({ txid: 'b1c7e3b67d128088c829c31a323c883a05bd9fa8b9a5a7bfd56d67c8579f6473' }).pretty()
+{
+	"_id" : ObjectId("5e4ce2c415ac811367cd539e"),
+	"involvesWatchonly" : true,
+	"account" : "",
+	"address" : "2N1SP7r92ZZJvYKG2oNtzPwYnzw62up7mTo",
+	"category" : "receive",
+	"amount" : 4.36,
+	"label" : "",
+	"confirmations" : 76,
+	"blockhash" : "833ff1c3e9270a7b014b0f684a89e3f751a58a268dc6f127597d538db69e0a3b",
+	"blockindex" : 67,
+	"blocktime" : 1524868087278,
+	"txid" : "b1c7e3b67d128088c829c31a323c883a05bd9fa8b9a5a7bfd56d67c8579f6473",
+	"vout" : 57,
+	"walletconflicts" : [ ],
+	"time" : 1524868072379,
+	"timereceived" : 1524868072379,
+	"bip125-replaceable" : "no"
+}
+{
+	"_id" : ObjectId("5e4ce2c415ac811367cd53aa"),
+	"involvesWatchonly" : true,
+	"account" : "",
+	"address" : "2N1SP7r92ZZJvYKG2oNtzPwYnzw62up7mTo",
+	"category" : "receive",
+	"amount" : 4.36,
+	"label" : "",
+	"confirmations" : 76,
+	"blockhash" : "833ff1c3e9270a7b014b0f684a89e3f751a58a268dc6f127597d538db69e0a3b",
+	"blockindex" : 67,
+	"blocktime" : 1524868087278,
+	"txid" : "b1c7e3b67d128088c829c31a323c883a05bd9fa8b9a5a7bfd56d67c8579f6473",
+	"vout" : 56,
+	"walletconflicts" : [ ],
+	"time" : 1524868072379,
+	"timereceived" : 1524868072379,
+	"bip125-replaceable" : "no"
+}
+```
+
+Doesn't really matter I guess, but why would a user create a transaction with two different but identical outputs?
+
 ## Repeated Blocks
 
 ```
