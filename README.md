@@ -190,6 +190,17 @@ true
 ]
 ```
 
+## Replace By Fee
+
+We may want to treat RBF transactions in some special way. There are none, though.
+
+```
+> db.listsinceblock1.distinct("bip125-replaceable")
+[ "no" ]
+> db.listsinceblock2.distinct("bip125-replaceable")
+[ "no" ]
+```
+
 ## ???
 
 ```
