@@ -119,6 +119,8 @@ The transaction `8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7
 
 This should mean that both sets contain different transactions because the `blockhash` passed was different.
 
+But if this is so, shouldn't one set contain the other? Maybe it's all random data, not even `regtest`?
+
 ## Weird Transaction
 
 There's a transaction in the second set that seems duplicated in all but the `vout`. 
