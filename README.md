@@ -1,6 +1,8 @@
 # Links
 
 1. [listsinceblock docs](https://bitcoin.org/en/developer-reference#listsinceblock)
+1. [SO: target-confirmations](https://bitcoin.stackexchange.com/questions/25103/listsinceblock-parameter-target-confirmations)
+1. [Author's comment on target-confirmations](https://github.com/bitcoin/bitcoin/pull/199#issuecomment-1514952)
 
 # Thinking Out Loud
 
