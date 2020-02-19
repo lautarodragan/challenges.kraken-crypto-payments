@@ -33,3 +33,16 @@ $ jq 'del(.transactions)' transactions-2.json
   "lastblock": "3125fc0ebdcbdae25051f0f5e69ac2969cf910bdf5017349ef55a0ef9d76d591"
 }
 ```
+
+## ???
+
+```
+$ jq '.transactions | map(select(.blockhash=="4f66926440f1b39fcd5db66609737f877ce32abfc68a945fbd049996ce7d0da2")) | length' transactions-1.json 
+3
+$ jq '.transactions | map(select(.blockhash=="3125fc0ebdcbdae25051f0f5e69ac2969cf910bdf5017349ef55a0ef9d76d591")) | length' transactions-1.json 
+16
+$ jq '.transactions | map(select(.blockhash=="4f66926440f1b39fcd5db66609737f877ce32abfc68a945fbd049996ce7d0da2")) | length' transactions-2.json 
+3
+$ jq '.transactions | map(select(.blockhash=="3125fc0ebdcbdae25051f0f5e69ac2969cf910bdf5017349ef55a0ef9d76d591")) | length' transactions-2.json 
+0
+```
