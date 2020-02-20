@@ -120,7 +120,7 @@ The transaction `8aa80d8d09ec01163984e214295c2177563aaba4a595267b8a2c0215be8b4d7
 
 This should mean that both sets contain different transactions because the `blockhash` passed was different.
 
-But if this is so, shouldn't one set contain the other? Maybe it's all random data, not even `regtest`?
+But if this is so, shouldn't one set contain the other? Maybe some transactions were reorg'd and are no longer present in the main chain, but aren't present in the `removed` entry because `include_removed` was not passed? Or maybe it's all random data, not even `regtest`...
 
 ## Weird Transaction
 
