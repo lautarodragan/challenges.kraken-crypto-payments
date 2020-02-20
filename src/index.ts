@@ -22,8 +22,8 @@ async function main() {
   await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock1')
   await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock2')
 
-  await f(dbConnection, 'listsinceblock1')
-  await f(dbConnection, 'listsinceblock2')
+  await findBalances(dbConnection, 'listsinceblock1')
+  await findBalances(dbConnection, 'listsinceblock2')
 
   await mongoClient.close()
 
@@ -47,13 +47,13 @@ async function fileToCollection(filePath: string, dbConnection: Db, collectionNa
   }
 }
 
-async function f(dbConnection: Db, collectionName: string) {
+async function findBalances(dbConnection: Db, collectionName: string) {
   const collection = dbConnection.collection(collectionName)
 
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
-    console.log('Finding transactions for', username, address)
-    const x = await collection.find({ address, category: 'receive' }).toArray()
-    console.log(`Found ${x.length} transactions for ${username} in ${collectionName}`)
+    const transactions = await collection.find({ address, category: 'receive' }).toArray()
+    const balanceToDeposit = transactions.reduce((accumulator: number, currentValue: any) => accumulator + currentValue.amount, 0)
+    console.log(`Found ${balanceToDeposit} balance to deposit to ${username} in ${transactions.length} transactions in ${collectionName}`)
   }
 
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
