@@ -23,6 +23,7 @@ async function main() {
   await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock2')
 
   await f(dbConnection, 'listsinceblock1')
+  await f(dbConnection, 'listsinceblock2')
 
   await mongoClient.close()
 
@@ -52,8 +53,7 @@ async function f(dbConnection: Db, collectionName: string) {
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     console.log('Finding transactions for', username, address)
     const x = await collection.find({ address, category: 'receive' }).toArray()
-    console.log(`Found ${x.length} transactions for ${username}`)
-
+    console.log(`Found ${x.length} transactions for ${username} in ${collectionName}`)
   }
 
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
