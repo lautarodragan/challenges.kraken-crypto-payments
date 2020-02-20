@@ -8,6 +8,7 @@
 
 1. `listsinceblock` returns transactions affecting addresses known to bitcoind's wallet.
     1. This hypothetical Kraken software uses bitcoind's wallet rather than its own wallet implementation.
+1. `listsinceblock`'s `address` field: [_send_ transactions list the address sent to. _receive_ transactions list the address received with.](https://github.com/bitcoin/bitcoin/issues/16040#issuecomment-493315929).
 1. At least some of the block hashes mentioned in the files don't exist in either mainnet or testnet. 
     1. It's probably some regtest data.
 1. `listsinceblock` takes a mandatory `blockhash` argument and three optional ones: `target_confirmations`, `include_watchonly` and `include_removed`. 
