@@ -40,7 +40,7 @@ async function main() {
 
 async function fileToCollection(filePath: string, dbConnection: Db, collectionName: string) {
   const collection = dbConnection.collection(collectionName)
-  await collection.createIndex({ blockhash: 1, txid: 1, vout: 1 }, { unique: true })
+  // await collection.createIndex({ blockhash: 1, txid: 1, vout: 1 }, { unique: true })
 
   const file = JSON.parse(await readFile(filePath, 'utf8'))
 
@@ -59,7 +59,7 @@ async function findBalances(dbConnection: Db, collectionName: string) {
   const collection = dbConnection.collection(collectionName)
 
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
-    const transactions = await collection.find({ address, category: 'receive' }).toArray()
+    const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
     const balanceToDeposit = transactions.reduce((accumulator: number, currentValue: any) => accumulator + currentValue.amount, 0)
     info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
