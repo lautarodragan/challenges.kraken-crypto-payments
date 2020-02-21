@@ -53,7 +53,7 @@ async function findBalances(dbConnection: Db, collectionName: string) {
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     const transactions = await collection.find({ address, category: 'receive' }).toArray()
     const balanceToDeposit = transactions.reduce((accumulator: number, currentValue: any) => accumulator + currentValue.amount, 0)
-    console.log(`Found ${balanceToDeposit} balance to deposit to ${username} in ${transactions.length} transactions in ${collectionName}`)
+    console.log(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
