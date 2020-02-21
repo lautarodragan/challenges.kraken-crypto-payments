@@ -9,6 +9,7 @@
 1. `listsinceblock` returns transactions affecting addresses known to bitcoind's wallet.
     1. This hypothetical Kraken software uses bitcoind's wallet rather than its own wallet implementation.
 1. `listsinceblock`'s `address` field: [_send_ transactions list the address sent to. _receive_ transactions list the address received with.](https://github.com/bitcoin/bitcoin/issues/16040#issuecomment-493315929).
+  - The known addresses of users are not really _of_ the users, they are addresses I own, which I created and asked users to transfer frunds to. 
 1. At least some of the block hashes mentioned in the files don't exist in either mainnet or testnet. 
     1. It's probably some regtest data.
 1. `listsinceblock` takes a mandatory `blockhash` argument and three optional ones: `target_confirmations`, `include_watchonly` and `include_removed`. 
@@ -17,11 +18,9 @@
     1. `include_removed` doesn't seem to matter in this case since both files have `remoted: []`.
     1. Every transaction in both files has `involvesWatchonly` set to `true`, `include_watchonly` was probably enabled, but it doesn't really matter.
  
-In theory, if there's a `receive` transaction in my wallets, the associated address has given me that money, so I should count it in my database.
-
 Filtering by `.confirmations >= 6` should be enough, assuming my node knows the chain tip at all times with insignificant lag and no reorgs larger than 6 blocks occur.  
 
-But what to infer from two different sets? Should I just merge them? Why are there 12 transactions present in both?
+But what to infer from two different sets? Should I just merge them? Why are there 12 transactions present in both, with the same amount of confirmations in both?
 
 # Random Data
 
