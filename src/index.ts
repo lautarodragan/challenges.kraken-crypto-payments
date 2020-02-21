@@ -15,19 +15,27 @@ const users = {
   'Spock': 'mvcyJMiAcSXKAEsQxbW9TYZ369rsMG6rVV',
 }
 
+function trace(...args: readonly unknown[]) {
+  if (process.env.VERBOSE)
+    console.log(...arguments)
+}
+
+function info(...args: readonly unknown[]) {
+  console.log(...args)
+}
+
 async function main() {
   const mongoClient = await MongoClient.connect('mongodb://localhost:27017/kraken', { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
 
-  await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock1')
-  await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock2')
+  await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock')
+  await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock')
 
-  await findBalances(dbConnection, 'listsinceblock1')
-  await findBalances(dbConnection, 'listsinceblock2')
+  await findBalances(dbConnection, 'listsinceblock')
 
   await mongoClient.close()
 
-  console.log('Bye bye!')
+  trace('Bye bye!')
 }
 
 async function fileToCollection(filePath: string, dbConnection: Db, collectionName: string) {
@@ -36,14 +44,14 @@ async function fileToCollection(filePath: string, dbConnection: Db, collectionNa
 
   const file = JSON.parse(await readFile(filePath, 'utf8'))
 
-  console.log(`Adding ${file.transactions.length} entries from ${filePath} to DB.${collectionName}...`)
+  trace(`Adding ${file.transactions.length} entries from ${filePath} to DB.${collectionName}...`)
   try {
     const writeResult = await collection.insertMany(file.transactions, { ordered: false })
-    console.log(`Added ${writeResult.result.n} entries.`)
+    trace(`Added ${writeResult.result.n} entries.`)
   } catch (error) {
     if (!isDuplicateKeyError(error))
       return console.error('Unexpected error:', error)
-    console.log(`Added ${error.result.nInserted} entries. Ignored ${error.result.result.writeErrors.length} duplicate entries.`)
+    trace(`Added ${error.result.nInserted} entries. Ignored ${error.result.result.writeErrors.length} duplicate entries.`)
   }
 }
 
@@ -53,7 +61,7 @@ async function findBalances(dbConnection: Db, collectionName: string) {
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     const transactions = await collection.find({ address, category: 'receive' }).toArray()
     const balanceToDeposit = transactions.reduce((accumulator: number, currentValue: any) => accumulator + currentValue.amount, 0)
-    console.log(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
+    info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
