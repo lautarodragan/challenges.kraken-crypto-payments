@@ -16,20 +16,20 @@ const users = {
   'Spock': 'mvcyJMiAcSXKAEsQxbW9TYZ369rsMG6rVV',
 }
 
-function trace(...args: readonly unknown[]) {
-  if (process.env.VERBOSE)
-    console.log(...arguments)
-}
-
-function info(...args: readonly unknown[]) {
-  console.log(...args)
-}
-
 async function main({
   mongoUrl = 'mongodb://localhost:27017/kraken',
   useDecimal = true,
 }) {
   trace({ mongoUrl })
+  function trace(...args: readonly unknown[]) {
+    if (process.env.VERBOSE)
+      console.log(...arguments)
+  }
+
+  function info(...args: readonly unknown[]) {
+    console.log(...args)
+  }
+
   const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
 
