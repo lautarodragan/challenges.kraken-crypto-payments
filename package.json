@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/lautarodragan/kraken-crypto-payments-challenge#readme",
   "dependencies": {
+    "decimal": "0.0.2",
     "mongodb": "3.5.3"
   },
   "devDependencies": {
