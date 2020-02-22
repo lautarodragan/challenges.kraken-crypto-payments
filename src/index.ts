@@ -1,3 +1,4 @@
+import { Decimal } from 'decimal.js'
 import { readFile as readFileCb } from 'fs'
 import { promisify } from 'util'
 
@@ -60,7 +61,7 @@ async function findBalances(dbConnection: Db, collectionName: string) {
 
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-    const balanceToDeposit = transactions.reduce((accumulator: number, currentValue: any) => accumulator + currentValue.amount, 0)
+    const balanceToDeposit = transactions.reduce((accumulator: Decimal, currentValue: any) => accumulator.plus(currentValue.amount), new Decimal(0))
     info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
