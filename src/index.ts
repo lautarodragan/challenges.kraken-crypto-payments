@@ -21,7 +21,6 @@ async function main({
   useDecimal = true,
   verbose = false,
 }) {
-  trace({ mongoUrl })
   function trace(...args: readonly unknown[]) {
     if (verbose)
       console.log(...arguments)
@@ -30,6 +29,8 @@ async function main({
   function info(...args: readonly unknown[]) {
     console.log(...args)
   }
+
+  trace({ mongoUrl, useDecimal, verbose })
 
   const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
