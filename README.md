@@ -11,7 +11,13 @@ In my case, I've made a couple of observations and assumptions:
     1. `listsinceblock`'s [_send_ transactions list the address sent to, _receive_ transactions list the address received with.](https://github.com/bitcoin/bitcoin/issues/16040#issuecomment-493315929), which means the addresses that sent bitcoins to us won't show up in the `listsinceblock` response.
 1. I've only taken `category='receive'` transactions into account. Including `category='send'` transactions would result in lower balances. It may feel intuitive that if some bitcoins sent to us by a user were later sent somewhere else, we should no longer consider them in their balance, but this is unlikely to be the case in a production exchange, since it'd be reasonable for Kraken to move some of the balances to a cold wallet and keep track of who has what in a traditional database. Also, from my understanding of what the `address` field means in entries of the `listsinceblock` output, the same address can only figure out both in `send` and `receive` transactions if we ourselves moved bitcoins inside the same bitcoin wallet from one address to another.
 
+## Configuration
+
+### Float & Decimal
+
 By default, users' amounts are summed using JavaScript's native addition, which uses [Double-precision floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) and has some small rounding errors that do add up. An environment variable `DECIMAL=1` can be passed to use [decimal.js](https://github.com/MikeMcl/decimal.js) addition instead, which is more accurate and better for handling money. 
+
+# Output Verbosity
 
 Logging verbosity can be increased by passing a `VERBOSE=1` environment variable. This will make the output richer but it will also not match the expected structure, and thus fail the regex tests.
 
