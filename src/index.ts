@@ -19,10 +19,11 @@ const users = {
 async function main({
   mongoUrl = 'mongodb://localhost:27017/kraken',
   useDecimal = true,
+  verbose = false,
 }) {
   trace({ mongoUrl })
   function trace(...args: readonly unknown[]) {
-    if (process.env.VERBOSE)
+    if (verbose)
       console.log(...arguments)
   }
 
@@ -103,4 +104,5 @@ const isDuplicateKeyError = (error: any) => error.code === 11000
 main({
   mongoUrl: process.env.MONGO_URL,
   useDecimal: !!process.env.DECIMAL,
+  verbose: !!process.env.VERBOSE,
 }).catch(console.error)
