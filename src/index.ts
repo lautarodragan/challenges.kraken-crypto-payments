@@ -27,6 +27,7 @@ function info(...args: readonly unknown[]) {
 
 async function main({
   mongoUrl = 'mongodb://localhost:27017/kraken',
+  useDecimal = true,
 }) {
   trace({ mongoUrl })
   const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
@@ -35,7 +36,7 @@ async function main({
   await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock')
   await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock')
 
-  await findBalances(dbConnection, 'listsinceblock')
+  await findBalances(dbConnection, 'listsinceblock', useDecimal)
 
   await mongoClient.close()
 
@@ -66,9 +67,9 @@ const sumDecimal = (accumulator: Decimal, currentValue: number) =>
     ? accumulator.plus(currentValue)
     : new Decimal(accumulator).plus(currentValue)
 
-async function findBalances(dbConnection: Db, collectionName: string) {
+async function findBalances(dbConnection: Db, collectionName: string, useDecimal = false) {
   const collection = dbConnection.collection(collectionName)
-  const sum = process.env.DECIMAL ? sumDecimal : sumFloat
+  const sum = useDecimal ? sumDecimal : sumFloat
 
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
@@ -102,4 +103,5 @@ const isDuplicateKeyError = (error: any) => error.code === 11000
 
 main({
   mongoUrl: process.env.MONGO_URL,
+  useDecimal: !!process.env.DECIMAL,
 }).catch(console.error)
