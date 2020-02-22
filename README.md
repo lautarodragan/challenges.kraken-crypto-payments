@@ -1,3 +1,19 @@
+# Kraken Crypto Payments Challenge Solution
+
+Hi! I'm [Lautaro](https://tarokun.io) and this is my solution for the Crypto Payments Challenge.
+
+The challenge given is intentionally vague, giving very little information. I think there may be more than one valid solution, even though it's stated that the results of the solution will be matched against regex.
+
+In my case, I've made a couple of observations and assumptions:
+1. The two data files contain transactions generated in a regtest and possibly manually expanded or modified. I suspect the data doesn't make sense unless a very deep reorg took place and `include_removed` was not passed to `listsinceblock`.
+1. The challenge mentions "known user addresses". I've interpreted this as "addresses WE (Kraken) and only we have the keys for, which we have generated for users to transfer their bitcoins to, one or more per user but never shared between different users". I've made this assumption because
+    1. This seems like a realistic production set up with HD wallets.
+    1. `listsinceblock`'s [_send_ transactions list the address sent to, _receive_ transactions list the address received with.](https://github.com/bitcoin/bitcoin/issues/16040#issuecomment-493315929), which means the addresses that sent bitcoins to us won't show up in the `listsinceblock` response.
+
+By default, users' amounts are summed using JavaScript's native addition, which uses [Double-precision floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) and has some small rounding errors that do add up. An environment variable `DECIMAL=1` can be passed to use [decimal.js](https://github.com/MikeMcl/decimal.js) addition instead, which is more accurate and better for handling money. 
+
+Logging verbosity can be increased by passing a `VERBOSE=1` environment variable. This will make the output richer but it will also not match the expected structure, and thus fail the regex tests.
+
 # Links
 
 1. [listsinceblock docs](https://bitcoin.org/en/developer-reference#listsinceblock)
@@ -8,10 +24,6 @@
 
 1. `listsinceblock` returns transactions affecting addresses known to bitcoind's wallet.
     1. This hypothetical Kraken software uses bitcoind's wallet rather than its own wallet implementation.
-1. `listsinceblock`'s `address` field: [_send_ transactions list the address sent to. _receive_ transactions list the address received with.](https://github.com/bitcoin/bitcoin/issues/16040#issuecomment-493315929).
-  - The known addresses of users are not really _of_ the users, they are addresses I own, which I created and asked users to transfer frunds to. 
-1. At least some of the block hashes mentioned in the files don't exist in either mainnet or testnet. 
-    1. It's probably some regtest data.
 1. `listsinceblock` takes a mandatory `blockhash` argument and three optional ones: `target_confirmations`, `include_watchonly` and `include_removed`. 
     1. None of them were provided in the challenge. Does it matter? 
     1. `target_confirmations` affects the result's `lastblock`. 
