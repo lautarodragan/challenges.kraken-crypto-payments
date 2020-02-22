@@ -50,8 +50,7 @@ async function main({
     }
   }
 
-  async function findBalances(dbConnection: Db, collectionName: string, useDecimal = false) {
-    const collection = dbConnection.collection(collectionName)
+  async function findBalances() {
     const sum = useDecimal ? sumDecimal : sumFloat
 
     const findTransactionsByUser = async ([username, address]: [string, string]) => {
@@ -85,7 +84,7 @@ async function main({
   await fileToCollection('./challenge/transactions-1.json')
   await fileToCollection('./challenge/transactions-2.json')
 
-  await findBalances(dbConnection, 'listsinceblock', useDecimal)
+  await findBalances()
 
   await mongoClient.close()
 
