@@ -33,31 +33,31 @@ async function main({
   const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
 
-  await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock')
-  await fileToCollection('./challenge/transactions-2.json', dbConnection, 'listsinceblock')
+  const collection = dbConnection.collection('listsinceblock')
+  await collection.createIndex({ blockhash: 1, txid: 1, vout: 1 }, { unique: true })
+
+  async function fileToCollection(filePath: string) {
+    const file = JSON.parse(await readFile(filePath, 'utf8'))
+
+    trace(`Adding ${file.transactions.length} entries from ${filePath} to DB.listsinceblock...`)
+    try {
+      const writeResult = await collection.insertMany(file.transactions, { ordered: false })
+      trace(`Added ${writeResult.result.n} entries.`)
+    } catch (error) {
+      if (!isDuplicateKeyError(error))
+        return console.error('Unexpected error:', error)
+      trace(`Added ${error.result.nInserted} entries. Ignored ${error.result.result.writeErrors.length} duplicate entries.`)
+    }
+  }
+
+  await fileToCollection('./challenge/transactions-1.json')
+  await fileToCollection('./challenge/transactions-2.json')
 
   await findBalances(dbConnection, 'listsinceblock', useDecimal)
 
   await mongoClient.close()
 
   trace('Bye bye!')
-}
-
-async function fileToCollection(filePath: string, dbConnection: Db, collectionName: string) {
-  const collection = dbConnection.collection(collectionName)
-  await collection.createIndex({ blockhash: 1, txid: 1, vout: 1 }, { unique: true })
-
-  const file = JSON.parse(await readFile(filePath, 'utf8'))
-
-  trace(`Adding ${file.transactions.length} entries from ${filePath} to DB.${collectionName}...`)
-  try {
-    const writeResult = await collection.insertMany(file.transactions, { ordered: false })
-    trace(`Added ${writeResult.result.n} entries.`)
-  } catch (error) {
-    if (!isDuplicateKeyError(error))
-      return console.error('Unexpected error:', error)
-    trace(`Added ${error.result.nInserted} entries. Ignored ${error.result.result.writeErrors.length} duplicate entries.`)
-  }
 }
 
 const sumFloat = (accumulator: number, currentValue: number) => accumulator + currentValue
