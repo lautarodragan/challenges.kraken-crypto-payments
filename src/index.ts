@@ -84,9 +84,15 @@ async function findBalances(dbConnection: Db, collectionName: string) {
     info(`Smallest valid deposit: ${transaction.amount}`)
   }
 
+  const findLargestValidDeposit = async () => {
+    const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: -1 } })
+    info(`Largest valid deposit: ${transaction.amount}`)
+  }
+
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
   await findTransactionsByUnknownUsers()
   await findSmallestValidDeposit()
+  await findLargestValidDeposit()
 }
 
 const isDuplicateKeyError = (error: any) => error.code === 11000
