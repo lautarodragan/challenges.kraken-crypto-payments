@@ -79,8 +79,14 @@ async function findBalances(dbConnection: Db, collectionName: string) {
     info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
+  const findSmallestValidDeposit = async () => {
+    const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: 1 } })
+    info(`Smallest valid deposit: ${transaction.amount}`)
+  }
+
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
   await findTransactionsByUnknownUsers()
+  await findSmallestValidDeposit()
 }
 
 const isDuplicateKeyError = (error: any) => error.code === 11000
