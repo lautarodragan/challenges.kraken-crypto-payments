@@ -16,5 +16,4 @@ services:
       - mongo
     environment:
       - DECIMAL=1
-      - VERBOSE=1
       - MONGO_URL=mongodb://mongo:27017/kraken
