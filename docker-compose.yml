@@ -10,3 +10,11 @@ services:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     command: mongod  --smallfiles --logpath=/dev/null
+  kraken:
+    build: .
+    depends_on:
+      - mongo
+    environment:
+      - DECIMAL=1
+      - VERBOSE=1
+      - MONGO_URL=mongodb://mongo:27017/kraken
