@@ -50,6 +50,38 @@ async function main({
     }
   }
 
+  async function findBalances(dbConnection: Db, collectionName: string, useDecimal = false) {
+    const collection = dbConnection.collection(collectionName)
+    const sum = useDecimal ? sumDecimal : sumFloat
+
+    const findTransactionsByUser = async ([username, address]: [string, string]) => {
+      const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+      const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
+      info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
+    }
+
+    const findTransactionsByUnknownUsers = async () => {
+      const transactions = await collection.find({ address: { $not: { $in: Object.values(users) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+      const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
+      info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
+    }
+
+    const findSmallestValidDeposit = async () => {
+      const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: 1 } })
+      info(`Smallest valid deposit: ${transaction.amount}`)
+    }
+
+    const findLargestValidDeposit = async () => {
+      const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: -1 } })
+      info(`Largest valid deposit: ${transaction.amount}`)
+    }
+
+    await Promise.all(Object.entries(users).map(findTransactionsByUser))
+    await findTransactionsByUnknownUsers()
+    await findSmallestValidDeposit()
+    await findLargestValidDeposit()
+  }
+
   await fileToCollection('./challenge/transactions-1.json')
   await fileToCollection('./challenge/transactions-2.json')
 
@@ -66,38 +98,6 @@ const sumDecimal = (accumulator: Decimal, currentValue: number) =>
   accumulator instanceof Decimal
     ? accumulator.plus(currentValue)
     : new Decimal(accumulator).plus(currentValue)
-
-async function findBalances(dbConnection: Db, collectionName: string, useDecimal = false) {
-  const collection = dbConnection.collection(collectionName)
-  const sum = useDecimal ? sumDecimal : sumFloat
-
-  const findTransactionsByUser = async ([username, address]: [string, string]) => {
-    const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-    const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
-    info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
-  }
-
-  const findTransactionsByUnknownUsers = async () => {
-    const transactions = await collection.find({ address: { $not: { $in: Object.values(users) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-    const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
-    info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
-  }
-
-  const findSmallestValidDeposit = async () => {
-    const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: 1 } })
-    info(`Smallest valid deposit: ${transaction.amount}`)
-  }
-
-  const findLargestValidDeposit = async () => {
-    const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 } }, { sort: { amount: -1 } })
-    info(`Largest valid deposit: ${transaction.amount}`)
-  }
-
-  await Promise.all(Object.entries(users).map(findTransactionsByUser))
-  await findTransactionsByUnknownUsers()
-  await findSmallestValidDeposit()
-  await findLargestValidDeposit()
-}
 
 const isDuplicateKeyError = (error: any) => error.code === 11000
 
