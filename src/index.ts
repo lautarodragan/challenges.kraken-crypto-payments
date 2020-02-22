@@ -56,6 +56,8 @@ async function fileToCollection(filePath: string, dbConnection: Db, collectionNa
   }
 }
 
+const sumFloat = (accumulator: number, currentValue: number) => accumulator + currentValue
+
 const sumDecimal = (accumulator: Decimal, currentValue: number) =>
   accumulator instanceof Decimal
     ? accumulator.plus(currentValue)
@@ -63,10 +65,11 @@ const sumDecimal = (accumulator: Decimal, currentValue: number) =>
 
 async function findBalances(dbConnection: Db, collectionName: string) {
   const collection = dbConnection.collection(collectionName)
+  const sum = process.env.DECIMAL ? sumDecimal : sumFloat
 
   const findTransactionsByUser = async ([username, address]: [string, string]) => {
     const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-    const balanceToDeposit = transactions.map(_ => _.amount).reduce(sumDecimal, 0)
+    const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
     info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
