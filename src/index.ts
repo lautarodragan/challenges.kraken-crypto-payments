@@ -2,7 +2,7 @@ import { Decimal } from 'decimal.js'
 import { readFile as readFileCb } from 'fs'
 import { promisify } from 'util'
 
-import { MongoClient, Db } from 'mongodb'
+import { MongoClient } from 'mongodb'
 
 const readFile = promisify(readFileCb)
 
