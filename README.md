@@ -17,7 +17,7 @@ In my case, I've made a couple of observations and assumptions:
 
 By default, users' amounts are summed using JavaScript's native addition, which uses [Double-precision floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) and has some small rounding errors that do add up. An environment variable `DECIMAL=1` can be passed to use [decimal.js](https://github.com/MikeMcl/decimal.js) addition instead, which is more accurate and better for handling money. 
 
-# Output Verbosity
+### Output Verbosity
 
 Logging verbosity can be increased by passing a `VERBOSE=1` environment variable. This will make the output richer but it will also not match the expected structure, and thus fail the regex tests.
 
