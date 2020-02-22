@@ -25,8 +25,11 @@ function info(...args: readonly unknown[]) {
   console.log(...args)
 }
 
-async function main() {
-  const mongoClient = await MongoClient.connect('mongodb://localhost:27017/kraken', { useUnifiedTopology: true })
+async function main({
+  mongoUrl = 'mongodb://localhost:27017/kraken',
+}) {
+  trace({ mongoUrl })
+  const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
 
   await fileToCollection('./challenge/transactions-1.json', dbConnection, 'listsinceblock')
@@ -97,4 +100,6 @@ async function findBalances(dbConnection: Db, collectionName: string) {
 
 const isDuplicateKeyError = (error: any) => error.code === 11000
 
-main().catch(console.error)
+main({
+  mongoUrl: process.env.MONGO_URL,
+}).catch(console.error)
