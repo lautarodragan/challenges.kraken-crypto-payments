@@ -73,7 +73,14 @@ async function findBalances(dbConnection: Db, collectionName: string) {
     info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
   }
 
+  const findTransactionsByUnknownUsers = async () => {
+    const transactions = await collection.find({ address: { $not: { $in: Object.values(users) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+    const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
+    info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
+  }
+
   await Promise.all(Object.entries(users).map(findTransactionsByUser))
+  await findTransactionsByUnknownUsers()
 }
 
 const isDuplicateKeyError = (error: any) => error.code === 11000
