@@ -18,7 +18,7 @@ In my case, I've made a couple of observations and assumptions:
 
 ### Float & Decimal
 
-By default, users' amounts are summed using JavaScript's native addition, which uses [Double-precision floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) and has some small rounding errors that do add up. An environment variable `DECIMAL=1` can be passed to use [decimal.js](https://github.com/MikeMcl/decimal.js) addition instead, which is more accurate and better for handling money. 
+By default, users' amounts are summed using JavaScript's native addition, which uses [double-precision floating-point](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) and has some small rounding errors that do add up. An environment variable `DECIMAL=1` can be passed to use [decimal.js](https://github.com/MikeMcl/decimal.js) addition instead, which is more accurate and better for handling money. 
 
 This variable is set in docker-compose, so if using `docker-compose up` without any extra parameters, it'll use decimal.js rather than floating-point addition.
 
