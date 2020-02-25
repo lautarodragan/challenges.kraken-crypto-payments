@@ -60,7 +60,12 @@ async function main({
     const findTransactionsByUser = async ([username, address]: [string, string]) => {
       const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
       const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
-      info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
+      return {
+        username,
+        address,
+        count: transactions.length,
+        balanceToDeposit,
+      }
     }
 
     const findTransactionsByUnknownUsers = async () => {
@@ -79,7 +84,11 @@ async function main({
       info(`Largest valid deposit: ${transaction.amount}`)
     }
 
-    await Promise.all(Object.entries(users).map(findTransactionsByUser))
+    const deposits = await Promise.all(Object.entries(users).map(findTransactionsByUser))
+
+    for (const { username, count, balanceToDeposit } of deposits)
+      info(`Deposited for ${username}: count=${count} sum=${balanceToDeposit}`)
+
     await findTransactionsByUnknownUsers()
     await findSmallestValidDeposit()
     await findLargestValidDeposit()
