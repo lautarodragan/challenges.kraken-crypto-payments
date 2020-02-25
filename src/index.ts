@@ -103,7 +103,7 @@ async function main({
     }
 
     const findSmallestValidDeposit = async () => {
-      const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 }, amount: { $gt: 0 } }, { sort: { amount: 1 } })
+      const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 }, amount: { $gte: 0.0001 } }, { sort: { amount: 1 } })
       info(`Smallest valid deposit: ${new Decimal(transaction.amount)}`)
     }
 
