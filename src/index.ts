@@ -7,6 +7,8 @@ import { MongoClient } from 'mongodb'
 
 const readFile = promisify(readFileCb)
 
+Decimal.set({ toExpNeg: -10 })
+
 interface User {
   readonly name: string
   readonly address: string
@@ -102,7 +104,7 @@ async function main({
 
     const findSmallestValidDeposit = async () => {
       const transaction = await collection.findOne({ category: 'receive', confirmations: { $gte: 6 }, amount: { $gt: 0 } }, { sort: { amount: 1 } })
-      info(`Smallest valid deposit: ${transaction.amount}`)
+      info(`Smallest valid deposit: ${new Decimal(transaction.amount).toString()}`)
     }
 
     const findLargestValidDeposit = async () => {
