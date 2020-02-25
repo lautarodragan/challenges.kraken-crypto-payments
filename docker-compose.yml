@@ -17,3 +17,6 @@ services:
     environment:
       - DECIMAL=1
       - MONGO_URL=mongodb://mongo:27017/kraken
+      - DATA_DIR=/data
+    volumes:
+      - ./challenge:/data

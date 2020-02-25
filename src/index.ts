@@ -1,5 +1,6 @@
 import { Decimal } from 'decimal.js'
 import { readFile as readFileCb } from 'fs'
+import { join } from 'path'
 import { promisify } from 'util'
 
 import { MongoClient } from 'mongodb'
@@ -20,6 +21,7 @@ async function main({
   mongoUrl = 'mongodb://localhost:27017/kraken',
   useDecimal = true,
   verbose = false,
+  dataDirectory = './challenge',
 }) {
   function trace(...args: readonly unknown[]) {
     if (verbose)
@@ -30,7 +32,7 @@ async function main({
     console.log(...args)
   }
 
-  trace({ mongoUrl, useDecimal, verbose })
+  trace({ mongoUrl, useDecimal, verbose, dataDirectory })
 
   const mongoClient = await MongoClient.connect(mongoUrl, { useUnifiedTopology: true })
   const dbConnection = await mongoClient.db()
@@ -83,8 +85,8 @@ async function main({
     await findLargestValidDeposit()
   }
 
-  await fileToCollection('./challenge/transactions-1.json')
-  await fileToCollection('./challenge/transactions-2.json')
+  await fileToCollection(join(dataDirectory, 'transactions-1.json'))
+  await fileToCollection(join(dataDirectory, 'transactions-2.json'))
 
   await findBalances()
 
@@ -106,4 +108,5 @@ main({
   mongoUrl: process.env.MONGO_URL,
   useDecimal: !!process.env.DECIMAL,
   verbose: !!process.env.VERBOSE,
+  dataDirectory: process.env.DATA_DIR,
 }).catch(console.error)
