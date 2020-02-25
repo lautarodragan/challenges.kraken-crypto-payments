@@ -7,15 +7,41 @@ import { MongoClient } from 'mongodb'
 
 const readFile = promisify(readFileCb)
 
-const users = {
-  'Wesley Crusher': 'mvd6qFeVkqH6MNAS2Y2cLifbdaX5XUkbZJ',
-  'Leonard McCoy': 'mmFFG4jqAtw9MoCC88hw5FNfreQWuEHADp',
-  'Jonathan Archer': 'mzzg8fvHXydKs8j9D2a8t7KpSXpGgAnk4n',
-  'Jadzia Dax': '2N1SP7r92ZZJvYKG2oNtzPwYnzw62up7mTo',
-  'Montgomery Scott': 'mutrAf4usv3HKNdpLwVD4ow2oLArL6Rez8',
-  'James T. Kirk': 'miTHhiX3iFhVnAEecLjybxvV5g8mKYTtnM',
-  'Spock': 'mvcyJMiAcSXKAEsQxbW9TYZ369rsMG6rVV',
+interface User {
+  readonly name: string
+  readonly address: string
 }
+
+const users: readonly User[] = [
+  {
+    name: 'Wesley Crusher',
+    address: 'mvd6qFeVkqH6MNAS2Y2cLifbdaX5XUkbZJ',
+  },
+  {
+    name: 'Leonard McCoy',
+    address: 'mmFFG4jqAtw9MoCC88hw5FNfreQWuEHADp',
+  },
+  {
+    name: 'Jonathan Archer',
+    address: 'mzzg8fvHXydKs8j9D2a8t7KpSXpGgAnk4n',
+  },
+  {
+    name: 'Jadzia Dax',
+    address: '2N1SP7r92ZZJvYKG2oNtzPwYnzw62up7mTo',
+  },
+  {
+    name: 'Montgomery Scott',
+    address: 'mutrAf4usv3HKNdpLwVD4ow2oLArL6Rez8',
+  },
+  {
+    name: 'James T. Kirk',
+    address: 'miTHhiX3iFhVnAEecLjybxvV5g8mKYTtnM',
+  },
+  {
+    name: 'Spock',
+    address: 'mvcyJMiAcSXKAEsQxbW9TYZ369rsMG6rVV',
+  },
+]
 
 async function main({
   mongoUrl = 'mongodb://localhost:27017/kraken',
@@ -57,14 +83,19 @@ async function main({
   async function findBalances() {
     const sum = useDecimal ? sumDecimal : sumFloat
 
-    const findTransactionsByUser = async ([username, address]: [string, string]) => {
+    const findTransactionsByUser = async ({ name, address }: User) => {
       const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-      const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
-      info(`Deposited for ${username}: count=${transactions.length} sum=${balanceToDeposit}`)
+      const amount = transactions.map(_ => _.amount).reduce(sum, 0)
+      return {
+        name,
+        address,
+        count: transactions.length,
+        amount,
+      }
     }
 
     const findTransactionsByUnknownUsers = async () => {
-      const transactions = await collection.find({ address: { $not: { $in: Object.values(users) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+      const transactions = await collection.find({ address: { $not: { $in: users.map(_ => _.address) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
       const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
       info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
     }
@@ -79,7 +110,11 @@ async function main({
       info(`Largest valid deposit: ${transaction.amount}`)
     }
 
-    await Promise.all(Object.entries(users).map(findTransactionsByUser))
+    const deposits = await Promise.all(users.map(findTransactionsByUser))
+
+    for (const { name, count, amount } of deposits)
+      info(`Deposited for ${name}: count=${count} sum=${amount}`)
+
     await findTransactionsByUnknownUsers()
     await findSmallestValidDeposit()
     await findLargestValidDeposit()
