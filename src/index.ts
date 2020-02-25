@@ -59,12 +59,12 @@ async function main({
 
     const findTransactionsByUser = async ([username, address]: [string, string]) => {
       const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
-      const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
+      const amount = transactions.map(_ => _.amount).reduce(sum, 0)
       return {
         username,
         address,
         count: transactions.length,
-        balanceToDeposit,
+        amount,
       }
     }
 
@@ -86,8 +86,8 @@ async function main({
 
     const deposits = await Promise.all(Object.entries(users).map(findTransactionsByUser))
 
-    for (const { username, count, balanceToDeposit } of deposits)
-      info(`Deposited for ${username}: count=${count} sum=${balanceToDeposit}`)
+    for (const { username, count, amount } of deposits)
+      info(`Deposited for ${username}: count=${count} sum=${amount}`)
 
     await findTransactionsByUnknownUsers()
     await findSmallestValidDeposit()
