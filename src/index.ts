@@ -86,7 +86,12 @@ async function main({
     const sum = useDecimal ? sumDecimal : sumFloat
 
     const findTransactionsByUser = async ({ name, address }: User) => {
-      const transactions = await collection.find({ address, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+      const transactions = await collection.find({
+        address,
+        category: 'receive',
+        confirmations: { $gte: 6 },
+        amount: { $gte: 0.0001 },
+      }).toArray()
       const amount = transactions.map(_ => _.amount).reduce(sum, 0)
       return {
         name,
