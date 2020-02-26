@@ -97,7 +97,12 @@ async function main({
     }
 
     const findTransactionsByUnknownUsers = async () => {
-      const transactions = await collection.find({ address: { $not: { $in: users.map(_ => _.address) } }, category: 'receive', confirmations: { $gte: 6 } }).toArray()
+      const transactions = await collection.find({
+        address: { $not: { $in: users.map(_ => _.address) } },
+        category: 'receive',
+        confirmations: { $gte: 6 },
+        amount: { $gte: 0.0001 },
+      }).toArray()
       const balanceToDeposit = transactions.map(_ => _.amount).reduce(sum, 0)
       info(`Deposited without reference: count=${transactions.length} sum=${balanceToDeposit}`)
     }
