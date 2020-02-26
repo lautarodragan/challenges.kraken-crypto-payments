@@ -120,7 +120,7 @@ async function main({
       }, {
         sort: { amount: 1 },
       })
-      info(`Smallest valid deposit: ${new Decimal(transaction.amount)}`)
+      info(`Smallest valid deposit: ${new Decimal(transaction.amount).toFixed(8)}`)
     }
 
     const findLargestValidDeposit = async () => {
@@ -130,13 +130,13 @@ async function main({
       }, {
         sort: { amount: -1 },
       })
-      info(`Largest valid deposit: ${transaction.amount}`)
+      info(`Largest valid deposit: ${new Decimal(transaction.amount).toFixed(8)}`)
     }
 
     const deposits = await Promise.all(users.map(findTransactionsByUser))
 
     for (const { name, count, amount } of deposits)
-      info(`Deposited for ${name}: count=${count} sum=${amount}`)
+      info(`Deposited for ${name}: count=${count} sum=${new Decimal(amount).toFixed(8)}`)
 
     await findTransactionsByUnknownUsers()
     await findSmallestValidDeposit()
