@@ -1,6 +1,6 @@
 # Kraken Crypto Payments Challenge Solution
 
-Hi! I'm [Lautaro](https://tarokun.io) and this is my solution for the Crypto Payments Challenge.
+Hi! I'm [Taro](https://taro.codes) and this is my solution for the Crypto Payments Challenge.
 
 The challenge given is intentionally vague, giving very little information. I think there may be more than one valid solution, even though it's stated that the results of the solution will be matched against regex.
 
